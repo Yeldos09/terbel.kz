@@ -21,6 +21,12 @@ const dj = () => import("../pages/dj/dj-area.tsx");
 const venue = () => import("../pages/venue/venue-area.tsx");
 const admin = () => import("../pages/admin/admin-page.tsx");
 
+function routerBasename() {
+  const base = import.meta.env.BASE_URL;
+  if (!base || base === "/") return undefined;
+  return base.endsWith("/") ? base.slice(0, -1) : base;
+}
+
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -55,4 +61,4 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage /> },
     ],
   },
-]);
+], { basename: routerBasename() });

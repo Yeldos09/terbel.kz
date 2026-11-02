@@ -16,7 +16,7 @@ import { WorkShell } from "../../shared/components/work-shell.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
 import { useDebouncedValue } from "../../shared/hooks/use-debounced-value.ts";
 import { formatNumber } from "../../shared/lib/format.ts";
-import { cn } from "../../shared/lib/utils.ts";
+import { appUrl, cn } from "../../shared/lib/utils.ts";
 import { Button } from "../../shared/ui/button.tsx";
 import { Dialog, DialogContent, DialogTitle } from "../../shared/ui/dialog.tsx";
 import { Field, Input, Textarea } from "../../shared/ui/field.tsx";
@@ -440,7 +440,7 @@ export function VenueQrPage() {
   const [size, setSize] = useState<(typeof QR_SIZES)[number]["id"]>(240);
   const [captionDraft, setCaptionDraft] = useState<{ venueId: string; text: string } | null>(null);
   const [failed, setFailed] = useState(false);
-  const url = venue ? `${window.location.origin}/v/${venue.slug}` : "";
+  const url = venue ? appUrl(`/v/${venue.slug}`) : "";
   const caption =
     venue && captionDraft?.venueId === venue.id ? captionDraft.text : venue ? `${venue.tableLabel} 1` : "";
   useEffect(() => {

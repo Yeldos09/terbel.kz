@@ -13,7 +13,7 @@ import { WorkShell } from "../../shared/components/work-shell.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
 import { useDebouncedValue } from "../../shared/hooks/use-debounced-value.ts";
 import { formatDateTime, formatKzt, formatNumber } from "../../shared/lib/format.ts";
-import { cn } from "../../shared/lib/utils.ts";
+import { appUrl, cn } from "../../shared/lib/utils.ts";
 import { Button } from "../../shared/ui/button.tsx";
 import { Input } from "../../shared/ui/field.tsx";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "../../shared/ui/menu.tsx";
@@ -82,7 +82,6 @@ export function DjHomePage() {
   const rows = db.data.requests.filter((request) => request.venueId === venue.id);
   const pending = rows.filter((request) => request.status === "PENDING" || request.status === "ACCEPTED");
   const playing = queueViews(db.data, venue.id).find((row) => row.request.status === "PLAYING");
-  const origin = window.location.origin;
   return (
     <div className="grid gap-4">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -103,7 +102,7 @@ export function DjHomePage() {
           className="mt-3"
           variant="outline"
           onClick={() => {
-            void navigator.clipboard.writeText(`${origin}/v/${venue.slug}`).then(
+            void navigator.clipboard.writeText(appUrl(`/v/${venue.slug}`)).then(
               () => toast.success(messages.toast.copied),
               () => toast.error(messages.toast.copyFailed),
             );
