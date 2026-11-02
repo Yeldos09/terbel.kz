@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/unbounded/500.css";
+@import "@fontsource/unbounded/600.css";
+
+@theme inline {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Unbounded", "Manrope", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+:root {
+  color-scheme: dark;
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --card: #121216;
+  --card-foreground: #f4f4f5;
+  --popover: #16161b;
+  --popover-foreground: #f4f4f5;
+  --primary: #d6ff4a;
+  --primary-foreground: #14160a;
+  --secondary: #1c1c22;
+  --secondary-foreground: #f4f4f5;
+  --muted: #18181d;
+  --muted-foreground: #a1a1aa;
+  --accent: #22222a;
+  --accent-foreground: #f4f4f5;
+  --destructive: #ef6b73;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #d6ff4a;
+  --radius: 0.9rem;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media screen {
+  body {
+    padding-bottom: 4.5rem;
+  }
+}
+
+::selection {
+  background: #d6ff4a;
+  color: #14160a;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 80;
+  border-radius: 0.6rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.5rem 0.8rem;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.landing-bg {
+  background:
+    radial-gradient(900px 420px at 85% -10%, rgba(214, 255, 74, 0.16), transparent 55%),
+    radial-gradient(680px 380px at -10% 15%, rgba(107, 140, 255, 0.16), transparent 52%),
+    radial-gradient(520px 320px at 50% 110%, rgba(139, 124, 247, 0.14), transparent 50%),
+    #09090b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .qr-print-card,
+  .qr-print-card * {
+    visibility: visible;
+  }
+
+  .qr-print-card {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    color: #111;
+    background: white;
+  }
+}
