@@ -36,7 +36,7 @@ export function DemoPage() {
             <TabsTrigger value="JUKEBOX">{messages.demo.boxTab}</TabsTrigger>
           </TabsList>
           <div className="mt-4">
-            <DemoWalkButtons mode={mode} />
+            <DemoWalkButtons />
           </div>
           <TabsContent value="DJ" className="mt-6">
             <Walkthrough mode="DJ" />

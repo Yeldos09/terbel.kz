@@ -61,7 +61,7 @@ export function VenueLayout() {
                       toast.success(messages.toast.venueSwitched);
                     }}
                   >
-                    {item.name}
+                    {item.name} · {messages.mode[item.mode]}
                   </MenuItem>
                 ))}
               </MenuContent>
@@ -91,6 +91,23 @@ export function VenueHomePage() {
         <Info label={messages.venue.mode} value={messages.mode[venue.mode]} />
         <Info label={messages.admin.columnOpen} value={venue.isOpen ? messages.venue.openState : messages.venue.closedState} />
         <Info label={messages.admin.columnRequests} value={formatNumber(requests.length)} />
+      </section>
+      <section className="rounded-2xl border border-primary/30 bg-primary/10 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">{messages.demoBadge}</p>
+        <h2 className="mt-2 font-display text-2xl">
+          {venue.mode === "JUKEBOX" ? messages.venue.catalogPoint : messages.venue.djPoint}
+        </h2>
+        <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-200">
+          {venue.mode === "JUKEBOX" ? messages.venue.catalogPointLead : messages.venue.djPointLead}
+        </p>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <Button asChild>
+            <Link to="/venue/catalog">{messages.nav.catalog}</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to={`/v/${venue.slug}`}>{messages.venue.openGuest}</Link>
+          </Button>
+        </div>
       </section>
       <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <p className="text-xs uppercase tracking-wider text-zinc-500">{messages.venue.preview}</p>
@@ -253,8 +270,12 @@ export function VenueCatalogPage() {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl">{messages.nav.catalog}</h1>
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">{messages.demoBadge}</p>
+          <h1 className="mt-2 font-display text-3xl">{messages.nav.catalog}</h1>
           <p className="mt-2 text-sm text-zinc-400">{messages.venue.catalogLead}</p>
+          <p className="mt-2 text-sm text-zinc-300">
+            {venue.mode === "JUKEBOX" ? messages.venue.catalogGuestBox : messages.venue.catalogGuestDj}
+          </p>
         </div>
         <Button onClick={() => setAddOpen(true)}>{messages.venue.add}</Button>
       </div>

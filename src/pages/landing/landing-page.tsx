@@ -80,11 +80,8 @@ export function LandingPage() {
                 <Button asChild size="lg">
                   <Link to="/demo">{messages.landing.ctaDemo}</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link to="/dj">{messages.landing.ctaDj}</Link>
-                </Button>
               </div>
-              <DemoWalkButtons mode={mode} />
+              <DemoWalkButtons />
             </div>
           </div>
           <HeroStage mode={mode} onModeChange={setMode} />
@@ -111,9 +108,6 @@ export function LandingPage() {
                 <li key={point} className="rounded-xl bg-white/5 px-3 py-3">{point}</li>
               ))}
             </ul>
-            <Button asChild className="mt-5">
-              <Link to="/dj/requests">{messages.landing.ctaDj}</Link>
-            </Button>
           </article>
           <article id="venue-benefits" className="rounded-2xl border border-white/10 bg-[#101014] p-6">
             <h2 className="font-display text-3xl">{messages.landing.venueTitle}</h2>
@@ -175,11 +169,8 @@ export function LandingPage() {
                 <Button asChild size="lg">
                   <Link to="/demo">{messages.landing.ctaDemo}</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link to="/dj">{messages.landing.ctaDj}</Link>
-                </Button>
               </div>
-              <DemoWalkButtons mode={mode} />
+              <DemoWalkButtons />
             </div>
           </div>
         </section>
