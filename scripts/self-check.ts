@@ -112,7 +112,7 @@ const draftId = createCheckoutDraft(box, {
 });
 confirmCheckout(box, draftId);
 const paid = box.requests.find((request) => request.id === draftId);
-assert(paid?.status === "QUEUED" && paid.paymentStatus === "MOCK_PAID", "джукбокс не встал в очередь");
+assert(paid?.status === "QUEUED" && paid.paymentStatus === "MOCK_PAID", "прямой заказ не встал в очередь");
 assert(!box.drafts.some((draft) => draft.id === draftId), "черновик не закрылся");
 
 const expiring = clone(seed);

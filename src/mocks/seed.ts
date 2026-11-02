@@ -150,7 +150,7 @@ export function createSeed(now = Date.now()): DemoDatabase {
       mode: "JUKEBOX",
       minBidKzt: 1_000,
       greeting: "Кухня допоздна. Цена на трек фиксированная, очередь собирается сама.",
-      description: "Ресторан в режиме автоджукбокса. Оплата в демо не настоящая.",
+      description: "Ресторан в режиме «Прямой заказ»: гость выбирает трек и платит цену заведения, без своей ставки. Оплата в демо не настоящая.",
       tableLabel: "Стол",
       acceptWindowMinutes: 60,
       isOpen: true,
