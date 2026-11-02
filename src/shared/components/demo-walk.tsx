@@ -47,13 +47,13 @@ export function DemoWalkButtons() {
         </p>
       </div>
       <div className="grid content-start gap-2">
-        <Button asChild size="lg" variant="outline" className="h-auto min-h-12 w-full whitespace-normal py-3">
+        <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
           <Link to="/dj">{messages.demo.walkDj}</Link>
         </Button>
         <p className="text-xs leading-5 text-zinc-300">{messages.demo.walkDjHint}</p>
       </div>
       <div className="grid content-start gap-2">
-        <Button asChild size="lg" variant="secondary" className="h-auto min-h-12 w-full whitespace-normal py-3">
+        <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
           <Link
             to="/venue"
             onClick={() => {

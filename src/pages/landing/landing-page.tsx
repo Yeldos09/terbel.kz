@@ -43,9 +43,6 @@ export function LandingPage() {
             <Link to="/venue" className="hover:text-white">{messages.nav.venue}</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild className="hidden sm:inline-flex">
-              <Link to="/demo">{messages.landing.ctaDemo}</Link>
-            </Button>
             <Button variant="outline" className="md:hidden" onClick={() => setMenu(true)}>
               {messages.nav.menu}
             </Button>
@@ -75,12 +72,7 @@ export function LandingPage() {
               {messages.landing.headline}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">{messages.landing.sub}</p>
-            <div className="mt-7 grid gap-4">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link to="/demo">{messages.landing.ctaDemo}</Link>
-                </Button>
-              </div>
+            <div className="mt-7">
               <DemoWalkButtons />
             </div>
           </div>
@@ -164,12 +156,7 @@ export function LandingPage() {
           <div className="rounded-3xl border border-primary/30 bg-primary/10 px-6 py-10 sm:px-10">
             <h2 className="font-display text-3xl sm:text-4xl">{messages.landing.finalTitle}</h2>
             <p className="mt-3 max-w-2xl text-zinc-300">{messages.landing.finalText}</p>
-            <div className="mt-6 grid gap-4">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link to="/demo">{messages.landing.ctaDemo}</Link>
-                </Button>
-              </div>
+            <div className="mt-6">
               <DemoWalkButtons />
             </div>
           </div>
