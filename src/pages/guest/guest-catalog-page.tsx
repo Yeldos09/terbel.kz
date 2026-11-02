@@ -77,6 +77,13 @@ export function GuestCatalogPage() {
             <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-bold text-primary">{messages.mode[venue.mode]}</span>
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-300">{venue.greeting}</p>
+          <p className="mt-3 rounded-xl border border-primary/30 bg-primary/10 px-3 py-3 text-sm leading-6">
+            <span className="font-semibold">{messages.mode[venue.mode]}.</span> {messages.modeHint[venue.mode]}
+            {" "}
+            {venue.mode === "DJ"
+              ? interpolate(messages.guest.rulesDj, { min: formatKzt(venue.minBidKzt) })
+              : messages.guest.rulesBox}
+          </p>
           {!venue.isOpen ? <p className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-sm">{messages.guest.closed}</p> : null}
           <label className="mt-5 block text-sm" htmlFor="catalog-search">
             <span className="sr-only">{messages.guest.search}</span>

@@ -7,6 +7,7 @@ import { quickBidAmounts } from "../../domain/pricing.ts";
 import { tracksForVenue, venueBySlug } from "../../domain/selectors.ts";
 import type { Track, Venue, VenueMode } from "../../domain/types.ts";
 import { BrandLink, PageMain } from "../../shared/components/chrome.tsx";
+import { DemoWalkButtons } from "../../shared/components/demo-walk.tsx";
 import { CoverArt } from "../../shared/components/cover-art.tsx";
 import { LocaleSwitch, ResetDemoButton } from "../../shared/components/locale-and-reset.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
@@ -74,13 +75,16 @@ export function LandingPage() {
               {messages.landing.headline}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">{messages.landing.sub}</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link to="/demo">{messages.landing.ctaDemo}</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/dj">{messages.landing.ctaDj}</Link>
-              </Button>
+            <div className="mt-7 grid gap-4">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg">
+                  <Link to="/demo">{messages.landing.ctaDemo}</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/dj">{messages.landing.ctaDj}</Link>
+                </Button>
+              </div>
+              <DemoWalkButtons mode={mode} />
             </div>
           </div>
           <HeroStage mode={mode} onModeChange={setMode} />
@@ -166,13 +170,16 @@ export function LandingPage() {
           <div className="rounded-3xl border border-primary/30 bg-primary/10 px-6 py-10 sm:px-10">
             <h2 className="font-display text-3xl sm:text-4xl">{messages.landing.finalTitle}</h2>
             <p className="mt-3 max-w-2xl text-zinc-300">{messages.landing.finalText}</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link to="/demo">{messages.landing.ctaDemo}</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/dj">{messages.landing.ctaDj}</Link>
-              </Button>
+            <div className="mt-6 grid gap-4">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg">
+                  <Link to="/demo">{messages.landing.ctaDemo}</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/dj">{messages.landing.ctaDj}</Link>
+                </Button>
+              </div>
+              <DemoWalkButtons mode={mode} />
             </div>
           </div>
         </section>

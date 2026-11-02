@@ -8,6 +8,7 @@ import { OrderForm } from "../../features/ordering/order-form.tsx";
 import { QueueBoard } from "../../features/queue/queue-board.tsx";
 import { RequestActions } from "../../features/requests/request-actions.tsx";
 import { BrandLink, PageMain, PageSkeleton } from "../../shared/components/chrome.tsx";
+import { DemoWalkButtons } from "../../shared/components/demo-walk.tsx";
 import { CoverArt } from "../../shared/components/cover-art.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
 import { cn } from "../../shared/lib/utils.ts";
@@ -34,6 +35,9 @@ export function DemoPage() {
             <TabsTrigger value="DJ">{messages.demo.djTab}</TabsTrigger>
             <TabsTrigger value="JUKEBOX">{messages.demo.boxTab}</TabsTrigger>
           </TabsList>
+          <div className="mt-4">
+            <DemoWalkButtons mode={mode} />
+          </div>
           <TabsContent value="DJ" className="mt-6">
             <Walkthrough mode="DJ" />
           </TabsContent>
