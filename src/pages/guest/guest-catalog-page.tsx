@@ -62,21 +62,21 @@ export function GuestCatalogPage() {
   const searching = query !== debounced;
 
   return (
-    <div className="min-h-dvh bg-[#09090b]">
-      <header className="border-b border-white/10">
+    <div className="min-h-dvh bg-background">
+      <header className="border-b border-border">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <BrandLink />
-          <Link to="/demo" className="text-sm text-zinc-400">{messages.nav.demo}</Link>
+          <Link to="/demo" className="text-sm text-muted-foreground">{messages.nav.demo}</Link>
         </div>
       </header>
       <PageMain className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-5 md:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">{venue.city} · {messages.kind[venue.kind]}</p>
+          <p className="text-xs uppercase tracking-wider text-faint">{venue.city} · {messages.kind[venue.kind]}</p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h1 className="font-display text-3xl">{venue.name}</h1>
             <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-bold text-primary">{messages.mode[venue.mode]}</span>
           </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-300">{venue.greeting}</p>
+          <p className="mt-3 text-sm leading-6 text-subtle">{venue.greeting}</p>
           <p className="mt-3 rounded-xl border border-primary/30 bg-primary/10 px-3 py-3 text-sm leading-6">
             <span className="font-semibold">{messages.mode[venue.mode]}.</span> {messages.modeHint[venue.mode]}
             {" "}
@@ -84,7 +84,7 @@ export function GuestCatalogPage() {
               ? interpolate(messages.guest.rulesDj, { min: formatKzt(venue.minBidKzt) })
               : messages.guest.rulesBox}
           </p>
-          {!venue.isOpen ? <p className="mt-3 rounded-xl bg-white/5 px-3 py-2 text-sm">{messages.guest.closed}</p> : null}
+          {!venue.isOpen ? <p className="mt-3 rounded-xl bg-muted px-3 py-2 text-sm">{messages.guest.closed}</p> : null}
           <label className="mt-5 block text-sm" htmlFor="catalog-search">
             <span className="sr-only">{messages.guest.search}</span>
             <Input
@@ -107,12 +107,12 @@ export function GuestCatalogPage() {
             ) : null}
             {!searching
               ? tracks.map((item) => (
-                <article key={item.id} className="flex gap-3 rounded-2xl border border-white/10 bg-[#121216] p-3">
+                <article key={item.id} className="flex gap-3 rounded-2xl border border-border bg-card p-3">
                   <CoverArt title={item.title} artist={item.artist} hue={item.coverHue} coverUrl={item.coverUrl} className="h-16 w-16 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <h2 className="truncate font-semibold">{item.title}</h2>
-                    <p className="truncate text-sm text-zinc-400">{item.artist} · {item.genre}</p>
-                    <p className="text-xs text-zinc-500">{formatDuration(item.durationSec)}</p>
+                    <p className="truncate text-sm text-muted-foreground">{item.artist} · {item.genre}</p>
+                    <p className="text-xs text-faint">{formatDuration(item.durationSec)}</p>
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <p className="text-sm font-semibold text-primary">
                         {venue.mode === "JUKEBOX" ? formatKzt(item.priceKzt) : `${messages.guest.from} ${formatKzt(venue.minBidKzt)}`}
@@ -127,15 +127,15 @@ export function GuestCatalogPage() {
               : null}
           </div>
         </div>
-        <aside className="h-fit rounded-2xl border border-white/10 bg-white/5 p-4 md:sticky md:top-4">
+        <aside className="h-fit rounded-2xl border border-border bg-muted p-4 md:sticky md:top-4">
           <h2 className="font-display text-xl">{messages.mode[venue.mode]}</h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">
+          <p className="mt-2 text-sm leading-6 text-subtle">
             {venue.mode === "DJ"
               ? interpolate(messages.guest.rulesDj, { min: formatKzt(venue.minBidKzt) })
               : messages.guest.rulesBox}
           </p>
-          <p className="mt-3 text-xs text-zinc-500">{messages.guest.yourRequests}</p>
-          <p className="mt-4 text-xs text-zinc-500">{messages.timezone}</p>
+          <p className="mt-3 text-xs text-faint">{messages.guest.yourRequests}</p>
+          <p className="mt-4 text-xs text-faint">{messages.timezone}</p>
         </aside>
       </PageMain>
       <Dialog open={Boolean(track)} onOpenChange={(open) => { if (!open) setTrack(null); }}>
@@ -174,7 +174,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
       onClick={onClick}
       className={cn(
         "shrink-0 cursor-pointer rounded-full px-3 py-1.5 text-sm",
-        active ? "bg-primary font-semibold text-primary-foreground" : "bg-white/10",
+        active ? "bg-primary font-semibold text-primary-foreground" : "bg-accent",
       )}
     >
       {children}

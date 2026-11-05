@@ -9,23 +9,21 @@ export function WorkShell({
   items,
   aside,
   children,
-  tone = "dj",
 }: {
   title: string;
   lead: string;
   items: { to: string; label: string; end?: boolean }[];
   aside?: ReactNode;
   children: ReactNode;
-  tone?: "dj" | "venue";
 }) {
   return (
-    <div className={tone === "dj" ? "min-h-dvh bg-[#050506] text-white" : "min-h-dvh bg-[#0c0c10] text-zinc-100"}>
-      <header className="border-b border-white/10">
+    <div className="min-h-dvh bg-background text-foreground">
+      <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <BrandLink />
           <div className="min-w-0 text-right">
             <p className="font-display text-lg leading-none">{title}</p>
-            <p className="mt-1 max-w-md text-xs text-zinc-400">{lead}</p>
+            <p className="mt-1 max-w-md text-xs text-muted-foreground">{lead}</p>
           </div>
         </div>
       </header>
@@ -40,7 +38,7 @@ export function WorkShell({
                 className={({ isActive }) =>
                   cn(
                     "shrink-0 rounded-lg px-3 py-2 text-sm font-semibold",
-                    isActive ? "bg-primary text-primary-foreground" : "bg-white/5 text-zinc-300 hover:bg-white/10",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-muted text-subtle hover:bg-accent",
                   )
                 }
               >

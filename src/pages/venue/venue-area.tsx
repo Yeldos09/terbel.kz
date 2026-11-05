@@ -5,6 +5,7 @@ import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { toCanvas } from "qrcode";
 import { useActiveVenue, useDemoDb, useRepoMutation } from "../../app/hooks.ts";
+import { StaffGate } from "../../features/auth/guard.tsx";
 import { tracksForVenue } from "../../domain/selectors.ts";
 import { trackFormSchema, venueSettingsSchema, type TrackFormInput, type VenueSettingsInput } from "../../domain/schemas.ts";
 import type { Track, Venue, VenueKind } from "../../domain/types.ts";
@@ -12,6 +13,7 @@ import { GENRE_SUGGESTIONS } from "../../mocks/seed.ts";
 import { repository } from "../../mocks/repository.ts";
 import { CoverArt } from "../../shared/components/cover-art.tsx";
 import { ConfirmDialog } from "../../shared/components/confirm-dialog.tsx";
+import { VenuePicker } from "../../shared/components/venue-picker.tsx";
 import { WorkShell } from "../../shared/components/work-shell.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
 import { useDebouncedValue } from "../../shared/hooks/use-debounced-value.ts";
@@ -20,7 +22,6 @@ import { appUrl, cn } from "../../shared/lib/utils.ts";
 import { Button } from "../../shared/ui/button.tsx";
 import { Dialog, DialogContent, DialogTitle } from "../../shared/ui/dialog.tsx";
 import { Field, Input, Textarea } from "../../shared/ui/field.tsx";
-import { Menu, MenuContent, MenuItem, MenuTrigger } from "../../shared/ui/menu.tsx";
 import { EmptyState, Skeleton } from "../../shared/ui/misc.tsx";
 import { SelectField } from "../../shared/ui/select.tsx";
 import { Switch } from "../../shared/ui/switch.tsx";
@@ -36,36 +37,26 @@ function useVenueNav() {
 }
 
 export function VenueLayout() {
+  return (
+    <StaffGate area="venue">
+      <VenueShell />
+    </StaffGate>
+  );
+}
+
+function VenueShell() {
   const messages = useMessages();
   const { query, venue } = useActiveVenue("dashboard");
   const nav = useVenueNav();
   return (
     <WorkShell
-      tone="venue"
       title={messages.venue.title}
       lead={messages.venue.lead}
       items={nav}
       aside={
-        query.data && venue ? (
+        venue ? (
           <div className="grid gap-2">
-            <Menu>
-              <MenuTrigger asChild>
-                <Button variant="outline">{venue.name}</Button>
-              </MenuTrigger>
-              <MenuContent>
-                {query.data.venues.map((item) => (
-                  <MenuItem
-                    key={item.id}
-                    onSelect={() => {
-                      repository.setActiveDashboardVenue(item.id);
-                      toast.success(messages.toast.venueSwitched);
-                    }}
-                  >
-                    {item.name} · {messages.mode[item.mode]}
-                  </MenuItem>
-                ))}
-              </MenuContent>
-            </Menu>
+            <VenuePicker venue={venue} which="dashboard" />
             <Button asChild size="sm">
               <Link to={`/v/${venue.slug}`}>{messages.venue.openGuest}</Link>
             </Button>
@@ -93,11 +84,10 @@ export function VenueHomePage() {
         <Info label={messages.admin.columnRequests} value={formatNumber(requests.length)} />
       </section>
       <section className="rounded-2xl border border-primary/30 bg-primary/10 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">{messages.demoBadge}</p>
-        <h2 className="mt-2 font-display text-2xl">
+        <h2 className="font-display text-2xl">
           {venue.mode === "JUKEBOX" ? messages.venue.catalogPoint : messages.venue.djPoint}
         </h2>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-200">
+        <p className="mt-2 max-w-xl text-sm leading-6 text-subtle">
           {venue.mode === "JUKEBOX" ? messages.venue.catalogPointLead : messages.venue.djPointLead}
         </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -109,20 +99,20 @@ export function VenueHomePage() {
           </Button>
         </div>
       </section>
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-        <p className="text-xs uppercase tracking-wider text-zinc-500">{messages.venue.preview}</p>
+      <section className="rounded-2xl border border-border bg-muted p-5">
+        <p className="text-xs uppercase tracking-wider text-faint">{messages.venue.preview}</p>
         <h2 className="mt-2 font-display text-3xl">{venue.name}</h2>
-        <p className="mt-2 max-w-xl text-zinc-300">{venue.greeting}</p>
+        <p className="mt-2 max-w-xl text-subtle">{venue.greeting}</p>
       </section>
       <section>
         <h2 className="font-display text-2xl">{messages.venue.recent}</h2>
-        {recent.length === 0 ? <p className="mt-2 text-sm text-zinc-400">{messages.venue.noRecent}</p> : null}
+        {recent.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{messages.venue.noRecent}</p> : null}
         <ul className="mt-3 grid gap-2">
           {recent.map((request) => (
             <li key={request.id}>
-              <Link className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-3 hover:bg-white/5" to={`/request/${request.id}`}>
+              <Link className="flex items-center justify-between rounded-xl border border-border px-3 py-3 hover:bg-muted" to={`/request/${request.id}`}>
                 <span>{request.trackTitle}</span>
-                <span className="text-sm text-zinc-400">{messages.status[request.status]}</span>
+                <span className="text-sm text-muted-foreground">{messages.status[request.status]}</span>
               </Link>
             </li>
           ))}
@@ -181,7 +171,7 @@ function SettingsForm({ venue }: { venue: Venue }) {
     >
       <div>
         <h1 className="font-display text-3xl">{messages.nav.settings}</h1>
-        <p className="mt-2 text-sm text-zinc-400">{messages.venue.settingsLead}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{messages.venue.settingsLead}</p>
       </div>
       <Field label={messages.venue.name} htmlFor="venue-name" error={form.formState.errors.name?.message}>
         <Input id="venue-name" {...form.register("name")} />
@@ -212,10 +202,10 @@ function SettingsForm({ venue }: { venue: Venue }) {
               type="button"
               aria-pressed={mode === value}
               onClick={() => form.setValue("mode", value, { shouldValidate: true })}
-              className={cn("cursor-pointer rounded-xl border px-3 py-3 text-left", mode === value ? "border-primary bg-primary/10" : "border-white/10")}
+              className={cn("cursor-pointer rounded-xl border px-3 py-3 text-left", mode === value ? "border-primary bg-primary/10" : "border-border")}
             >
               <span className="block font-semibold">{messages.mode[value]}</span>
-              <span className="mt-1 block text-xs text-zinc-400">{messages.modeHint[value]}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">{messages.modeHint[value]}</span>
             </button>
           ))}
         </div>
@@ -237,13 +227,13 @@ function SettingsForm({ venue }: { venue: Venue }) {
       <Field label={messages.venue.window} htmlFor="venue-window" error={form.formState.errors.acceptWindowMinutes?.message}>
         <Input id="venue-window" type="number" {...form.register("acceptWindowMinutes", { valueAsNumber: true })} />
       </Field>
-      <div className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-3">
+      <div className="flex items-center justify-between rounded-xl border border-border px-3 py-3">
         <span id="venue-open">{messages.venue.open}</span>
         <Switch labelledBy="venue-open" checked={isOpen} onCheckedChange={(checked) => form.setValue("isOpen", checked)} />
       </div>
-      <p className="text-sm text-zinc-400">{messages.venue.slug}: /v/{venue.slug}. {messages.venue.slugHint}</p>
-      <div className="rounded-2xl bg-white/5 p-4">
-        <p className="text-xs text-zinc-500">{messages.venue.preview}</p>
+      <p className="text-sm text-muted-foreground">{messages.venue.slug}: /v/{venue.slug}. {messages.venue.slugHint}</p>
+      <div className="rounded-2xl bg-muted p-4">
+        <p className="text-xs text-faint">{messages.venue.preview}</p>
         <p className="mt-2">{greeting}</p>
       </div>
       <Button type="submit" disabled={action.isPending}>{messages.save}</Button>
@@ -270,10 +260,9 @@ export function VenueCatalogPage() {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">{messages.demoBadge}</p>
-          <h1 className="mt-2 font-display text-3xl">{messages.nav.catalog}</h1>
-          <p className="mt-2 text-sm text-zinc-400">{messages.venue.catalogLead}</p>
-          <p className="mt-2 text-sm text-zinc-300">
+          <h1 className="font-display text-3xl">{messages.nav.catalog}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{messages.venue.catalogLead}</p>
+          <p className="mt-2 text-sm text-subtle">
             {venue.mode === "JUKEBOX" ? messages.venue.catalogGuestBox : messages.venue.catalogGuestDj}
           </p>
         </div>
@@ -306,15 +295,15 @@ export function VenueCatalogPage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-      <p className="text-sm text-zinc-400">{label}</p>
+    <div className="rounded-2xl border border-border bg-muted p-4">
+      <p className="text-sm text-muted-foreground">{label}</p>
       <p className="mt-1 font-display text-2xl">{value}</p>
     </div>
   );
 }
 
 function chip(active: boolean): string {
-  return cn("cursor-pointer rounded-full px-3 py-1.5 text-sm", active ? "bg-primary text-primary-foreground" : "bg-white/10");
+  return cn("cursor-pointer rounded-full px-3 py-1.5 text-sm", active ? "bg-primary text-primary-foreground" : "bg-accent");
 }
 
 function TrackEditor({ track }: { track: Track }) {
@@ -323,12 +312,12 @@ function TrackEditor({ track }: { track: Track }) {
   const [price, setPrice] = useState(String(track.priceKzt));
   const [removeOpen, setRemoveOpen] = useState(false);
   return (
-    <article className="grid gap-3 rounded-2xl border border-white/10 p-3 sm:grid-cols-[auto_1fr_auto]">
+    <article className="grid gap-3 rounded-2xl border border-border p-3 sm:grid-cols-[auto_1fr_auto]">
       <CoverArt title={track.title} artist={track.artist} hue={track.coverHue} coverUrl={track.coverUrl} className="h-14 w-14" />
       <div className="min-w-0">
         <p className="truncate font-semibold">{track.title}</p>
-        <p className="truncate text-sm text-zinc-400">{track.artist} · {track.genre}</p>
-        <p className="text-xs text-zinc-500">{track.enabled ? messages.venue.visible : messages.venue.hidden}</p>
+        <p className="truncate text-sm text-muted-foreground">{track.artist} · {track.genre}</p>
+        <p className="text-xs text-faint">{track.enabled ? messages.venue.visible : messages.venue.hidden}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <Input className="h-9 max-w-36" inputMode="numeric" aria-label={messages.venue.price} value={price} onChange={(event) => setPrice(event.target.value)} />
           <Button
@@ -404,7 +393,7 @@ function AddTrackForm({ venueId, onDone }: { venueId: string; onDone: () => void
       </Field>
       <div className="flex flex-wrap gap-2">
         {GENRE_SUGGESTIONS.map((genre) => (
-          <button key={genre} type="button" className="cursor-pointer rounded-full bg-white/10 px-2 py-1 text-xs" onClick={() => form.setValue("genre", genre)}>
+          <button key={genre} type="button" className="cursor-pointer rounded-full bg-accent px-2 py-1 text-xs" onClick={() => form.setValue("genre", genre)}>
             {genre}
           </button>
         ))}
@@ -474,7 +463,7 @@ export function VenueQrPage() {
     <div className="grid gap-6 lg:grid-cols-[1fr_auto]">
       <div>
         <h1 className="font-display text-3xl">{messages.nav.qr}</h1>
-        <p className="mt-2 text-sm text-zinc-400">{messages.venue.qrLead}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{messages.venue.qrLead}</p>
         <Field label={messages.venue.link} htmlFor="qr-link">
           <Input id="qr-link" ref={linkRef} readOnly value={url} className="mt-2" />
         </Field>
@@ -528,7 +517,7 @@ export function VenueQrPage() {
               }
               const anchor = document.createElement("a");
               anchor.href = canvas.toDataURL("image/png");
-              anchor.download = `shaiqa-${venue.slug}-qr.png`;
+              anchor.download = `terbel-${venue.slug}-qr.png`;
               anchor.click();
               toast.success(messages.toast.pngSaved);
             }}
@@ -540,12 +529,12 @@ export function VenueQrPage() {
         {failed ? <p className="mt-3 text-sm text-destructive">{messages.toast.pngFailed}</p> : null}
       </div>
       <article className="qr-print-card mx-auto w-full max-w-sm rounded-3xl border border-black/10 bg-white p-6 text-center text-black">
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-500">{messages.brand}</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-faint">{messages.brand}</p>
         <h2 className="mt-2 font-display text-2xl">{venue.name}</h2>
         <p className="mt-1 text-sm">{caption}</p>
         <canvas ref={canvasRef} className="mx-auto mt-4 max-w-full" />
         <p className="mt-4 font-display text-xl">{messages.venue.printPhrase}</p>
-        <p className="mt-2 break-all text-xs text-zinc-500">{url}</p>
+        <p className="mt-2 break-all text-xs text-faint">{url}</p>
       </article>
     </div>
   );

@@ -6,8 +6,8 @@ export function CheckoutPage() {
   const { venueSlug = "", requestId = "" } = useParams();
   const navigate = useNavigate();
   return (
-    <div className="min-h-dvh bg-[#09090b]">
-      <header className="border-b border-white/10 px-4 py-3">
+    <div className="min-h-dvh bg-background">
+      <header className="border-b border-border px-4 py-3">
         <BrandLink />
       </header>
       <PageMain className="mx-auto max-w-lg px-4 py-6">

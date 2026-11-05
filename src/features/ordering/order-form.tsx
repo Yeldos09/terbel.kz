@@ -77,7 +77,7 @@ function DjOrderForm({
         );
       })}
     >
-      <p className="rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-sm text-amber-50">
+      <p className="rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-sm text-warning">
         {messages.guest.warning}
       </p>
       <p className="text-sm text-muted-foreground">{interpolate(messages.guest.rulesDj, { min: formatKzt(venue.minBidKzt) })}</p>

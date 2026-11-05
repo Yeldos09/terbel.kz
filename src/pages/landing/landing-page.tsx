@@ -2,6 +2,8 @@ import { useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { useDemoDb } from "../../app/hooks.ts";
+import { staffHref } from "../../features/auth/access.ts";
+import { useSession } from "../../features/auth/session.ts";
 import { buildAnalytics } from "../../domain/analytics.ts";
 import { quickBidAmounts } from "../../domain/pricing.ts";
 import { tracksForVenue, venueBySlug } from "../../domain/selectors.ts";
@@ -9,7 +11,7 @@ import type { Track, Venue, VenueMode } from "../../domain/types.ts";
 import { BrandLink, PageMain } from "../../shared/components/chrome.tsx";
 import { DemoWalkButtons } from "../../shared/components/demo-walk.tsx";
 import { CoverArt } from "../../shared/components/cover-art.tsx";
-import { LocaleSwitch, ResetDemoButton } from "../../shared/components/locale-and-reset.tsx";
+import { LocaleSwitch, ThemeSwitch } from "../../shared/components/locale-and-reset.tsx";
 import { useMessages } from "../../shared/i18n/context.ts";
 import { formatKzt, formatNumber } from "../../shared/lib/format.ts";
 import { cn } from "../../shared/lib/utils.ts";
@@ -20,6 +22,7 @@ import { Skeleton } from "../../shared/ui/misc.tsx";
 
 export function LandingPage() {
   const messages = useMessages();
+  const session = useSession();
   const [mode, setMode] = useState<VenueMode>("DJ");
   const [menu, setMenu] = useState(false);
   const links = [
@@ -30,17 +33,17 @@ export function LandingPage() {
 
   return (
     <div className="landing-bg min-h-dvh">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#09090b]/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <BrandLink />
-          <nav aria-label={messages.brand} className="hidden items-center gap-5 text-sm text-zinc-300 md:flex">
+          <nav aria-label={messages.brand} className="hidden items-center gap-5 text-sm text-subtle md:flex">
             {links.map(([label, href]) => (
-              <a key={href} href={href} className="hover:text-white">
+              <a key={href} href={href} className="hover:text-foreground">
                 {label}
               </a>
             ))}
-            <Link to="/demo" className="hover:text-white">{messages.nav.demo}</Link>
-            <Link to="/venue" className="hover:text-white">{messages.nav.venue}</Link>
+            <Link to="/demo" className="hover:text-foreground">{messages.nav.demo}</Link>
+            <Link to={staffHref("/venue", session)} className="hover:text-foreground">{messages.nav.venue}</Link>
           </nav>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="md:hidden" onClick={() => setMenu(true)}>
@@ -59,19 +62,18 @@ export function LandingPage() {
               </a>
             ))}
             <Link to="/demo" onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-accent">{messages.nav.demo}</Link>
-            <Link to="/dj" onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-accent">{messages.nav.dj}</Link>
-            <Link to="/venue" onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-accent">{messages.nav.venue}</Link>
+            <Link to={staffHref("/dj", session)} onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-accent">{messages.nav.dj}</Link>
+            <Link to={staffHref("/venue", session)} onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-accent">{messages.nav.venue}</Link>
           </div>
         </DialogContent>
       </Dialog>
       <PageMain>
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">{messages.demoBadge}</p>
-            <h1 className="mt-4 font-display text-[1.85rem] leading-tight text-balance sm:text-5xl">
+            <h1 className="font-display text-[1.85rem] leading-tight text-balance sm:text-5xl">
               {messages.landing.headline}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">{messages.landing.sub}</p>
+            <p className="mt-5 max-w-xl text-base leading-7 text-subtle sm:text-lg">{messages.landing.sub}</p>
             <div className="mt-7">
               <DemoWalkButtons />
             </div>
@@ -83,43 +85,43 @@ export function LandingPage() {
           <h2 className="font-display text-3xl">{messages.landing.howTitle}</h2>
           <ol className="mt-6 grid gap-4 md:grid-cols-3">
             {messages.landing.how.map((step, index) => (
-              <li key={step.title} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <li key={step.title} className="rounded-2xl border border-border bg-muted p-5">
                 <span className="text-sm font-bold text-primary">0{index + 1}</span>
                 <h3 className="mt-3 font-display text-xl">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">{step.text}</p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.text}</p>
               </li>
             ))}
           </ol>
         </section>
 
         <section id="dj" className="mx-auto grid max-w-6xl scroll-mt-24 gap-4 px-4 py-8 md:grid-cols-2">
-          <article className="rounded-2xl border border-white/10 bg-[#101014] p-6">
+          <article className="rounded-2xl border border-border bg-card p-6">
             <h2 className="font-display text-3xl">{messages.landing.djTitle}</h2>
-            <ul className="mt-4 grid gap-3 text-sm leading-6 text-zinc-300">
+            <ul className="mt-4 grid gap-3 text-sm leading-6 text-subtle">
               {messages.landing.djPoints.map((point) => (
-                <li key={point} className="rounded-xl bg-white/5 px-3 py-3">{point}</li>
+                <li key={point} className="rounded-xl bg-muted px-3 py-3">{point}</li>
               ))}
             </ul>
           </article>
-          <article id="venue-benefits" className="rounded-2xl border border-white/10 bg-[#101014] p-6">
+          <article id="venue-benefits" className="rounded-2xl border border-border bg-card p-6">
             <h2 className="font-display text-3xl">{messages.landing.venueTitle}</h2>
-            <ul className="mt-4 grid gap-3 text-sm leading-6 text-zinc-300">
+            <ul className="mt-4 grid gap-3 text-sm leading-6 text-subtle">
               {messages.landing.venuePoints.map((point) => (
-                <li key={point} className="rounded-xl bg-white/5 px-3 py-3">{point}</li>
+                <li key={point} className="rounded-xl bg-muted px-3 py-3">{point}</li>
               ))}
             </ul>
             <Button asChild variant="secondary" className="mt-5">
-              <Link to="/venue">{messages.nav.venue}</Link>
+              <Link to={staffHref("/venue", session)}>{messages.nav.venue}</Link>
             </Button>
           </article>
         </section>
 
         <section id="modes" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12">
           <h2 className="font-display text-3xl">{messages.landing.compareTitle}</h2>
-          <p className="mt-2 text-sm text-zinc-400">{messages.landing.compareCaption}</p>
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+          <p className="mt-2 text-sm text-muted-foreground">{messages.landing.compareCaption}</p>
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-border">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="bg-white/5 text-zinc-300">
+              <thead className="bg-muted text-subtle">
                 <tr>
                   <th className="px-4 py-3 font-medium"> </th>
                   <th className="px-4 py-3 font-medium">{messages.mode.DJ}</th>
@@ -128,10 +130,10 @@ export function LandingPage() {
               </thead>
               <tbody>
                 {messages.landing.compare.map((row) => (
-                  <tr key={row.label} className="border-t border-white/10">
-                    <th className="px-4 py-3 font-medium text-zinc-200">{row.label}</th>
-                    <td className="px-4 py-3 text-zinc-400">{row.dj}</td>
-                    <td className="px-4 py-3 text-zinc-400">{row.box}</td>
+                  <tr key={row.label} className="border-t border-border">
+                    <th className="px-4 py-3 font-medium text-subtle">{row.label}</th>
+                    <td className="px-4 py-3 text-muted-foreground">{row.dj}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{row.box}</td>
                   </tr>
                 ))}
               </tbody>
@@ -155,26 +157,26 @@ export function LandingPage() {
         <section className="mx-auto max-w-6xl px-4 py-12">
           <div className="rounded-3xl border border-primary/30 bg-primary/10 px-6 py-10 sm:px-10">
             <h2 className="font-display text-3xl sm:text-4xl">{messages.landing.finalTitle}</h2>
-            <p className="mt-3 max-w-2xl text-zinc-300">{messages.landing.finalText}</p>
+            <p className="mt-3 max-w-2xl text-subtle">{messages.landing.finalText}</p>
             <div className="mt-6">
               <DemoWalkButtons />
             </div>
           </div>
         </section>
       </PageMain>
-      <footer className="border-t border-white/10 px-4 py-8">
+      <footer className="border-t border-border px-4 py-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-4">
-          <p className="text-sm text-zinc-400">{messages.landing.footerNote}</p>
-          <p className="text-xs text-zinc-500">{messages.localeHint}</p>
+          <p className="text-sm text-muted-foreground">{messages.landing.footerNote}</p>
           <div className="flex flex-wrap items-center gap-4">
             <LocaleSwitch />
-            <ResetDemoButton variant="ghost" />
+            <ThemeSwitch />
           </div>
-          <nav className="flex flex-wrap gap-4 text-sm text-zinc-300">
+          <nav className="flex flex-wrap gap-4 text-sm text-subtle">
             <Link to="/demo">{messages.nav.demo}</Link>
-            <Link to="/dj">{messages.nav.dj}</Link>
-            <Link to="/venue">{messages.nav.venue}</Link>
-            <Link to="/admin">{messages.nav.admin}</Link>
+            <Link to={staffHref("/dj", session)}>{messages.nav.dj}</Link>
+            <Link to={staffHref("/venue", session)}>{messages.nav.venue}</Link>
+            <Link to={staffHref("/admin", session)}>{messages.nav.admin}</Link>
+            <Link to="/login">{messages.nav.login}</Link>
             <Link to="/v/loft-47">Лофт 47</Link>
             <Link to="/v/nochnaya-kuhnya">Ночная кухня</Link>
           </nav>
@@ -204,11 +206,11 @@ function StatsBlock() {
   return (
     <section id="stats" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-8">
       <h2 className="font-display text-3xl">{messages.landing.statsTitle}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-zinc-400">{messages.landing.statsCaption}</p>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{messages.landing.statsCaption}</p>
       <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map(([label, value]) => (
-          <div key={label} className="rounded-2xl border border-white/10 bg-black/30 p-4">
-            <dt className="text-sm text-zinc-400">{label}</dt>
+          <div key={label} className="rounded-2xl border border-border bg-muted p-4">
+            <dt className="text-sm text-muted-foreground">{label}</dt>
             <dd className="mt-2 font-display text-2xl text-primary">{value}</dd>
           </div>
         ))}
@@ -233,15 +235,15 @@ function HeroStage({ mode, onModeChange }: { mode: VenueMode; onModeChange: (mod
             onClick={() => onModeChange(value)}
             className={cn(
               "cursor-pointer rounded-xl border px-3 py-3 text-left",
-              mode === value ? "border-primary bg-primary/10" : "border-white/10 bg-black/30",
+              mode === value ? "border-primary bg-primary/10" : "border-border bg-muted",
             )}
           >
             <span className="block text-sm font-bold">{messages.mode[value]}</span>
-            <span className="mt-1 block text-xs text-zinc-400">{messages.modeHint[value]}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">{messages.modeHint[value]}</span>
           </button>
         ))}
       </div>
-      <p className="mb-2 text-xs uppercase tracking-wider text-zinc-500">{messages.landing.liveLabel}</p>
+      <p className="mb-2 text-xs uppercase tracking-wider text-faint">{messages.landing.liveLabel}</p>
       {!db.data || !db.data.venues.length ? (
         <Skeleton className="h-[420px] w-full" />
       ) : (
@@ -278,11 +280,11 @@ function HeroPhone({
   const amounts = quickBidAmounts(venue.minBidKzt);
 
   return (
-    <div className={cn("rounded-[2rem] border border-white/15 bg-[#070709] p-3 shadow-2xl", reduce ? "" : "transition-transform")}>
-      <div className="rounded-[1.4rem] border border-white/10 bg-[#101014] p-4">
+    <div className={cn("rounded-[2rem] border border-border bg-background p-3 shadow-2xl", reduce ? "" : "transition-transform")}>
+      <div className="rounded-[1.4rem] border border-border bg-card p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-zinc-500">{venue.city}</p>
+            <p className="text-xs text-faint">{venue.city}</p>
             <p className="font-display text-lg">{venue.name}</p>
           </div>
           <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-bold text-primary">{messages.mode[venue.mode]}</span>
@@ -299,13 +301,13 @@ function HeroPhone({
               }}
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-xl border px-2 py-2 text-left",
-                item.id === track.id ? "border-primary/60 bg-white/5" : "border-transparent hover:bg-white/5",
+                item.id === track.id ? "border-primary/60 bg-muted" : "border-transparent hover:bg-muted",
               )}
             >
               <CoverArt title={item.title} artist={item.artist} hue={item.coverHue} coverUrl={item.coverUrl} className="h-10 w-10" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{item.title}</span>
-                <span className="block truncate text-xs text-zinc-400">{item.artist}</span>
+                <span className="block truncate text-xs text-muted-foreground">{item.artist}</span>
               </span>
               <span className="text-xs font-semibold text-primary">
                 {venue.mode === "JUKEBOX" ? formatKzt(item.priceKzt) : `${messages.guest.from} ${formatKzt(venue.minBidKzt)}`}
@@ -323,7 +325,7 @@ function HeroPhone({
                 onClick={() => setAmount(value)}
                 className={cn(
                   "cursor-pointer rounded-full px-2.5 py-1 text-xs font-semibold",
-                  amount === value ? "bg-primary text-primary-foreground" : "bg-white/10",
+                  amount === value ? "bg-primary text-primary-foreground" : "bg-accent",
                 )}
               >
                 {formatKzt(value)}
@@ -331,7 +333,7 @@ function HeroPhone({
             ))}
           </div>
         ) : (
-          <p className="mt-3 text-sm text-zinc-300">{formatKzt(track.priceKzt)} · {messages.mode.JUKEBOX}</p>
+          <p className="mt-3 text-sm text-subtle">{formatKzt(track.priceKzt)} · {messages.mode.JUKEBOX}</p>
         )}
         <Button className="mt-3 w-full" onClick={() => setShown(true)}>
           {messages.landing.heroSubmit}

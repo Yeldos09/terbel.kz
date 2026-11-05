@@ -19,6 +19,8 @@ import type { HTMLAttributes } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { useDemoDb, useRepoMutation } from "../../app/hooks.ts";
+import { canManageVenue } from "../auth/access.ts";
+import { useSession } from "../auth/session.ts";
 import { queueViews } from "../../domain/selectors.ts";
 import type { QueueView } from "../../domain/types.ts";
 import { repository } from "../../mocks/repository.ts";
@@ -32,8 +34,10 @@ import { Tooltip } from "../../shared/ui/tooltip.tsx";
 
 export function QueueBoard({ venueId, guestPath }: { venueId: string; guestPath: string }) {
   const messages = useMessages();
+  const session = useSession();
   const db = useDemoDb();
   const action = useRepoMutation();
+  const manage = canManageVenue(session, venueId);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -59,6 +63,7 @@ export function QueueBoard({ venueId, guestPath }: { venueId: string; guestPath:
   }
 
   const onDragEnd = (event: DragEndEvent) => {
+    if (!manage) return;
     const overId = event.over?.id;
     if (!overId || event.active.id === overId) return;
     run(
@@ -68,6 +73,8 @@ export function QueueBoard({ venueId, guestPath }: { venueId: string; guestPath:
   };
 
   return (
+    <div className="grid gap-3">
+      {manage ? null : <p className="text-sm text-muted-foreground">{messages.cabinet.staffQueue}</p>}
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
       <SortableContext items={rows.map((row) => row.request.id)} strategy={verticalListSortingStrategy}>
         <ol className="grid gap-3">
@@ -82,11 +89,13 @@ export function QueueBoard({ venueId, guestPath }: { venueId: string; guestPath:
               onFinish={() => run(() => repository.completePlaying(row.request.id), messages.toast.completed)}
               onReturn={() => run(() => repository.returnToQueue(row.request.id), messages.toast.returned)}
               onDequeue={() => run(() => repository.dequeueToAccepted(row.request.id), messages.toast.dequeued)}
+              manage={manage}
             />
           ))}
         </ol>
       </SortableContext>
     </DndContext>
+    </div>
   );
 }
 
@@ -99,6 +108,7 @@ function QueueRow({
   onFinish,
   onReturn,
   onDequeue,
+  manage,
 }: {
   row: QueueView;
   index: number;
@@ -108,10 +118,11 @@ function QueueRow({
   onFinish: () => void;
   onReturn: () => void;
   onDequeue: () => void;
+  manage: boolean;
 }) {
   const messages = useMessages();
   const playing = row.request.status === "PLAYING";
-  const sortable = useSortable({ id: row.request.id, disabled: playing });
+  const sortable = useSortable({ id: row.request.id, disabled: playing || !manage });
   const style = {
     transform: CSS.Transform.toString(sortable.transform),
     transition: sortable.transition,
@@ -123,24 +134,26 @@ function QueueRow({
     <li
       ref={sortable.setNodeRef}
       style={style}
-      className="rounded-2xl border border-white/10 bg-[#121216] p-3"
+      className="rounded-2xl border border-border bg-card p-3"
     >
       <div className="flex gap-3">
-        <Tooltip label={messages.dj.drag}>
-          <button
-            type="button"
-            className="mt-1 cursor-grab text-zinc-400 disabled:cursor-not-allowed"
-            role="button"
-            tabIndex={playing ? -1 : 0}
-            aria-roledescription="sortable"
-            aria-disabled={playing}
-            aria-label={messages.dj.drag}
-            disabled={playing}
-            {...(sortable.listeners as HTMLAttributes<HTMLButtonElement> | undefined)}
-          >
-            <GripVertical className="h-5 w-5" />
-          </button>
-        </Tooltip>
+        {manage ? (
+          <Tooltip label={messages.dj.drag}>
+            <button
+              type="button"
+              className="mt-1 cursor-grab text-muted-foreground disabled:cursor-not-allowed"
+              role="button"
+              tabIndex={playing ? -1 : 0}
+              aria-roledescription="sortable"
+              aria-disabled={playing}
+              aria-label={messages.dj.drag}
+              disabled={playing}
+              {...(sortable.listeners as HTMLAttributes<HTMLButtonElement> | undefined)}
+            >
+              <GripVertical className="h-5 w-5" />
+            </button>
+          </Tooltip>
+        ) : null}
         <CoverArt
           title={row.request.trackTitle}
           artist={row.request.trackArtist}
@@ -150,16 +163,16 @@ function QueueRow({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-zinc-400">#{row.item.position}</span>
+            <span className="text-xs text-muted-foreground">#{row.item.position}</span>
             <StatusBadge status={row.request.status} />
           </div>
           <p className="truncate font-semibold">{row.request.trackTitle}</p>
-          <p className="truncate text-sm text-zinc-400">
+          <p className="truncate text-sm text-muted-foreground">
             {row.request.trackArtist} · {row.request.guestName} · {formatKzt(row.request.amountKzt)}
           </p>
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      {manage ? <div className="mt-3 flex flex-wrap gap-2">
         <Button size="sm" variant="secondary" disabled={cannotUp} aria-label={cannotUp ? messages.errors.queue_edge_up : messages.dj.up} onClick={() => onMove(-1)}>
           {messages.dj.up}
         </Button>
@@ -178,7 +191,7 @@ function QueueRow({
             <Button size="sm" variant="outline" onClick={onReturn}>{messages.dj.return}</Button>
           </>
         ) : null}
-      </div>
+      </div> : null}
     </li>
   );
 }

@@ -20,6 +20,7 @@ const demo = () => import("../pages/demo/demo-page.tsx");
 const dj = () => import("../pages/dj/dj-area.tsx");
 const venue = () => import("../pages/venue/venue-area.tsx");
 const admin = () => import("../pages/admin/admin-page.tsx");
+const login = () => import("../pages/login/login-page.tsx");
 
 function routerBasename() {
   const base = import.meta.env.BASE_URL;
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: "/admin", lazy: chunk(admin, "AdminPage") },
+      { path: "/login", lazy: chunk(login, "LoginPage") },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

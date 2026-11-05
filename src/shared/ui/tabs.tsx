@@ -8,7 +8,7 @@ export function Tabs(props: ComponentProps<typeof TabsPrimitive.Root>) {
 
 export function TabsList({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <TabsPrimitive.List className={cn("flex gap-1 rounded-xl bg-white/5 p-1", className)}>
+    <TabsPrimitive.List className={cn("flex gap-1 rounded-xl bg-muted p-1", className)}>
       {children}
     </TabsPrimitive.List>
   );

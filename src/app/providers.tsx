@@ -5,6 +5,7 @@ import { I18nProvider } from "../shared/i18n/provider.tsx";
 import { TooltipProvider } from "../shared/ui/tooltip.tsx";
 import { queryClient } from "./query-client.ts";
 import { DEMO_QUERY_KEY } from "./query-key.ts";
+import { ThemeProvider } from "./theme.tsx";
 
 function DemoSync() {
   const client = useQueryClient();
@@ -20,9 +21,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <DemoSync />
-      <I18nProvider>
-        <TooltipProvider>{children}</TooltipProvider>
-      </I18nProvider>
+      <ThemeProvider>
+        <I18nProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

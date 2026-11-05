@@ -2,12 +2,14 @@ import { Command } from "cmdk";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useDemoDb } from "../../app/hooks.ts";
+import { staffHref } from "../../features/auth/access.ts";
+import { useSession } from "../../features/auth/session.ts";
 import { useMessages } from "../i18n/context.ts";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog.tsx";
-import { ResetDemoButton } from "./locale-and-reset.tsx";
 
 export function CommandPalette() {
   const messages = useMessages();
+  const session = useSession();
   const navigate = useNavigate();
   const db = useDemoDb();
   const [open, setOpen] = useState(false);
@@ -40,6 +42,7 @@ export function CommandPalette() {
     [messages.nav.catalog, "/venue/catalog"],
     [messages.nav.qr, "/venue/qr"],
     [messages.nav.admin, "/admin"],
+    [messages.nav.login, "/login"],
   ] as const;
 
   return (
@@ -50,7 +53,7 @@ export function CommandPalette() {
         onClick={() => setOpen(true)}
       >
         {messages.openCommand}
-        <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-xs">{messages.commandKbd}</kbd>
+        <kbd className="rounded bg-accent px-1.5 py-0.5 text-xs">{messages.commandKbd}</kbd>
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="overflow-hidden p-0" hideClose>
@@ -67,7 +70,7 @@ export function CommandPalette() {
                   <Command.Item
                     key={to}
                     value={`${label} ${to}`}
-                    onSelect={() => go(to)}
+                    onSelect={() => go(staffHref(to, session))}
                     className="cursor-pointer rounded-lg px-3 py-2 text-sm text-foreground data-[selected=true]:bg-accent"
                   >
                     {label}
@@ -86,9 +89,6 @@ export function CommandPalette() {
                     <span className="ml-2 text-muted-foreground">{venue.city}</span>
                   </Command.Item>
                 ))}
-              </Command.Group>
-              <Command.Group heading={messages.command.actions} className="mt-2 px-2 pb-2">
-                <ResetDemoButton variant="outline" />
               </Command.Group>
             </Command.List>
           </Command>

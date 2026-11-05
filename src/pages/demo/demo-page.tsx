@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useDemoDb } from "../../app/hooks.ts";
+import { staffHref } from "../../features/auth/access.ts";
+import { useSession } from "../../features/auth/session.ts";
 import { requestView, tracksForVenue, venueBySlug } from "../../domain/selectors.ts";
 import type { VenueMode } from "../../domain/types.ts";
 import { CheckoutPanel } from "../../features/ordering/checkout-panel.tsx";
@@ -17,19 +19,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../shared/ui/tabs.t
 
 export function DemoPage() {
   const messages = useMessages();
+  const session = useSession();
   const [mode, setMode] = useState<VenueMode>("DJ");
   return (
-    <div className="min-h-dvh bg-[#09090b]">
-      <header className="border-b border-white/10 px-4 py-3">
+    <div className="min-h-dvh bg-background">
+      <header className="border-b border-border px-4 py-3">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <BrandLink />
-          <Link to="/admin" className="text-sm text-zinc-400">{messages.nav.admin}</Link>
+          <Link to={staffHref("/admin", session)} className="text-sm text-muted-foreground">{messages.nav.admin}</Link>
         </div>
       </header>
       <PageMain className="mx-auto max-w-5xl px-4 py-8">
-        <p className="text-sm font-semibold text-primary">{messages.demoBadge}</p>
-        <h1 className="mt-2 font-display text-4xl">{messages.demo.title}</h1>
-        <p className="mt-3 max-w-2xl text-zinc-300">{messages.demo.lead}</p>
+        <h1 className="font-display text-4xl">{messages.demo.title}</h1>
+        <p className="mt-3 max-w-2xl text-subtle">{messages.demo.lead}</p>
         <Tabs value={mode} onValueChange={(value) => setMode(value as VenueMode)} className="mt-6">
           <TabsList>
             <TabsTrigger value="DJ">{messages.demo.djTab}</TabsTrigger>
@@ -52,6 +54,7 @@ export function DemoPage() {
 
 function Walkthrough({ mode }: { mode: VenueMode }) {
   const messages = useMessages();
+  const session = useSession();
   const db = useDemoDb();
   const slug = mode === "DJ" ? "loft-47" : "nochnaya-kuhnya";
   const venue = db.data ? venueBySlug(db.data, slug) : null;
@@ -67,8 +70,8 @@ function Walkthrough({ mode }: { mode: VenueMode }) {
     <div className="grid gap-6">
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" size="sm"><Link to={`/v/${venue.slug}`}>{messages.demo.openGuest}</Link></Button>
-        <Button asChild variant="outline" size="sm"><Link to="/dj/requests">{messages.demo.openDj}</Link></Button>
-        <Button asChild variant="outline" size="sm"><Link to="/dj/queue">{messages.demo.openQueue}</Link></Button>
+        <Button asChild variant="outline" size="sm"><Link to={staffHref("/dj/requests", session)}>{messages.demo.openDj}</Link></Button>
+        <Button asChild variant="outline" size="sm"><Link to={staffHref("/dj/queue", session)}>{messages.demo.openQueue}</Link></Button>
         {mode === "JUKEBOX" ? (
           <Button asChild variant="outline" size="sm">
             <Link to={`/v/${venue.slug}/checkout/draft_kitchen_demo`}>{messages.demo.sample}</Link>
@@ -94,20 +97,20 @@ function Walkthrough({ mode }: { mode: VenueMode }) {
               }}
               className={cn(
                 "flex cursor-pointer items-center gap-3 rounded-xl border p-2 text-left",
-                item.id === trackId ? "border-primary" : "border-white/10",
+                item.id === trackId ? "border-primary" : "border-border",
               )}
             >
               <CoverArt title={item.title} artist={item.artist} hue={item.coverHue} coverUrl={item.coverUrl} className="h-12 w-12" />
               <span>
                 <span className="block font-semibold">{item.title}</span>
-                <span className="block text-sm text-zinc-400">{item.artist}</span>
+                <span className="block text-sm text-muted-foreground">{item.artist}</span>
               </span>
             </button>
           ))}
         </div>
       </section>
       {track ? (
-        <section className="rounded-2xl border border-white/10 p-4">
+        <section className="rounded-2xl border border-border p-4">
           <h2 className="font-display text-2xl">{messages.demo.details}</h2>
           <div className="mt-4">
             <OrderForm
@@ -123,9 +126,9 @@ function Walkthrough({ mode }: { mode: VenueMode }) {
         </section>
       ) : null}
       {mode === "DJ" && created ? (
-        <section className="rounded-2xl border border-white/10 p-4">
+        <section className="rounded-2xl border border-border p-4">
           <h2 className="font-display text-2xl">{messages.demo.decide}</h2>
-          <p className="mt-2 text-sm text-zinc-300">
+          <p className="mt-2 text-sm text-subtle">
             {created.request.trackTitle} · {created.request.guestName}
           </p>
           <div className="mt-3">

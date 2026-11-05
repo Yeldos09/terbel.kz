@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { DEMO_QUERY_KEY } from "../../app/query-key.ts";
 import { useDemoDb } from "../../app/hooks.ts";
 import { venueBySlug } from "../../domain/selectors.ts";
+import { staffHref } from "../../features/auth/access.ts";
+import { useSession } from "../../features/auth/session.ts";
 import { repository } from "../../mocks/repository.ts";
 import { useMessages } from "../i18n/context.ts";
 import { Button } from "../ui/button.tsx";
@@ -21,6 +23,7 @@ function focusDirectOrderVenue(): void {
 
 export function DemoWalkButtons() {
   const messages = useMessages();
+  const session = useSession();
   const db = useDemoDb();
   const client = useQueryClient();
   const djVenue = db.data ? venueBySlug(db.data, DJ_GUEST_SLUG) : null;
@@ -34,7 +37,7 @@ export function DemoWalkButtons() {
         <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
           <Link to={`/v/${DJ_GUEST_SLUG}`}>{messages.demo.walkGuestDj}</Link>
         </Button>
-        <p className="text-xs leading-5 text-zinc-300">
+        <p className="text-xs leading-5 text-subtle">
           {djName} · {messages.mode.DJ}. {messages.modeHint.DJ}
         </p>
       </div>
@@ -42,21 +45,22 @@ export function DemoWalkButtons() {
         <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
           <Link to={`/v/${DIRECT_ORDER_SLUG}`}>{messages.demo.walkGuestBox}</Link>
         </Button>
-        <p className="text-xs leading-5 text-zinc-300">
+        <p className="text-xs leading-5 text-subtle">
           {directName} · {messages.mode.JUKEBOX}. {messages.modeHint.JUKEBOX}
         </p>
       </div>
       <div className="grid content-start gap-2">
         <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
-          <Link to="/dj">{messages.demo.walkDj}</Link>
+          <Link to={staffHref("/dj", session)}>{messages.demo.walkDj}</Link>
         </Button>
-        <p className="text-xs leading-5 text-zinc-300">{messages.demo.walkDjHint}</p>
+        <p className="text-xs leading-5 text-subtle">{messages.demo.walkDjHint}</p>
       </div>
       <div className="grid content-start gap-2">
         <Button asChild size="lg" className="h-auto min-h-12 w-full whitespace-normal py-3">
           <Link
-            to="/venue"
+            to={staffHref("/venue", session)}
             onClick={() => {
+              if (session?.role !== "platform") return;
               focusDirectOrderVenue();
               client.setQueryData(DEMO_QUERY_KEY, repository.read());
             }}
@@ -64,7 +68,7 @@ export function DemoWalkButtons() {
             {messages.demo.walkAdmin}
           </Link>
         </Button>
-        <p className="text-xs leading-5 text-zinc-300">
+        <p className="text-xs leading-5 text-subtle">
           {directName} · {messages.mode.JUKEBOX}. {messages.demo.walkAdminHint}
         </p>
       </div>

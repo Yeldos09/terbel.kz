@@ -1,3 +1,6 @@
+import { findAccount, registerVenue } from "../domain/accounts.ts";
+import { canManageVenue } from "../features/auth/access.ts";
+import { sessionState } from "../features/auth/store.ts";
 import { addTrack, applyVenueSettings, removeTrack, setTrackEnabled, setTrackPrice } from "../domain/catalog.ts";
 import { DomainError } from "../domain/errors.ts";
 import { expireStale } from "../domain/requests.ts";
@@ -16,11 +19,11 @@ import {
   type CreateDraftInput,
 } from "../domain/requests.ts";
 import { moveQueueItem, reorderQueue } from "../domain/queue.ts";
-import { trackFormSchema, trackPriceSchema, venueSettingsSchema, type TrackFormInput, type VenueSettingsInput } from "../domain/schemas.ts";
-import { LOCALES, SCHEMA_VERSION, type DemoDatabase, type Locale } from "../domain/types.ts";
+import { registerVenueSchema, trackFormSchema, trackPriceSchema, venueSettingsSchema, type RegisterVenueInput, type TrackFormInput, type VenueSettingsInput } from "../domain/schemas.ts";
+import { LOCALES, SCHEMA_VERSION, type Account, type DemoDatabase, type Locale } from "../domain/types.ts";
 import { createSeed } from "./seed.ts";
 
-const STORAGE_KEY = "shaiqa.kz.demo.v1";
+const STORAGE_KEY = "terbel.kz.demo.v1";
 
 export type Recovery = "invalid";
 
@@ -33,11 +36,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isDatabase(value: unknown): value is DemoDatabase {
   if (!isRecord(value)) return false;
   if (value.schemaVersion !== SCHEMA_VERSION) return false;
+  if (!Array.isArray(value.accounts) || value.accounts.length === 0) return false;
   if (!Array.isArray(value.venues) || value.venues.length === 0) return false;
   if (!Array.isArray(value.tracks) || !Array.isArray(value.requests)) return false;
   if (!Array.isArray(value.queue) || !Array.isArray(value.drafts)) return false;
   if (typeof value.activeDjVenueId !== "string" || typeof value.activeDashboardVenueId !== "string") return false;
   if (!LOCALES.includes(value.locale as Locale)) return false;
+  const account = value.accounts[0];
+  if (!isRecord(account) || (account.role !== "platform" && account.role !== "venue")) return false;
+  if (typeof account.email !== "string" || typeof account.id !== "string") return false;
   const venue = value.venues[0];
   if (!isRecord(venue) || typeof venue.id !== "string" || typeof venue.slug !== "string") return false;
   if (venue.mode !== "DJ" && venue.mode !== "JUKEBOX") return false;
@@ -126,6 +133,26 @@ function commit(mutate: (draft: DemoDatabase) => void): void {
   emit();
 }
 
+function assertManageVenue(venueId: string): void {
+  if (!canManageVenue(sessionState.get(), venueId)) throw new DomainError("auth_forbidden");
+}
+
+function assertManageRequest(requestId: string): void {
+  const request = current.requests.find((item) => item.id === requestId);
+  if (!request) throw new DomainError("request_missing");
+  assertManageVenue(request.venueId);
+}
+
+function assertManageTrack(trackId: string): void {
+  const track = current.tracks.find((item) => item.id === trackId);
+  if (!track) throw new DomainError("track_invalid");
+  assertManageVenue(track.venueId);
+}
+
+function assertPlatform(): void {
+  if (sessionState.get()?.role !== "platform") throw new DomainError("auth_forbidden");
+}
+
 function read(): DemoDatabase {
   const draft = structuredClone(current);
   if (expireStale(draft)) {
@@ -175,12 +202,30 @@ export const repository = {
     });
   },
   setActiveDjVenue(venueId: string): void {
+    const session = sessionState.get();
+    if (session?.role === "venue" && session.venueId !== venueId) throw new DomainError("auth_forbidden");
     commit((draft) => {
       if (!draft.venues.some((venue) => venue.id === venueId)) throw new DomainError("venue_not_found");
       draft.activeDjVenueId = venueId;
     });
   },
+  login(email: string, password: string): Account {
+    return findAccount(read(), email, password);
+  },
+  registerVenue(input: RegisterVenueInput): Account {
+    assertPlatform();
+    const parsed = registerVenueSchema.safeParse(input);
+    if (!parsed.success) throw new DomainError("settings_invalid");
+    let account: Account | null = null;
+    commit((draft) => {
+      account = registerVenue(draft, parsed.data);
+    });
+    if (!account) throw new DomainError("settings_invalid");
+    return account;
+  },
   setActiveDashboardVenue(venueId: string): void {
+    const session = sessionState.get();
+    if (session?.role === "venue" && session.venueId !== venueId) throw new DomainError("auth_forbidden");
     commit((draft) => {
       if (!draft.venues.some((venue) => venue.id === venueId)) throw new DomainError("venue_not_found");
       draft.activeDashboardVenueId = venueId;
@@ -208,38 +253,49 @@ export const repository = {
     return id;
   },
   accept(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => acceptRequest(draft, requestId));
   },
   enqueue(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => enqueueRequest(draft, requestId));
   },
   reject(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => rejectRequest(draft, requestId));
   },
   startPlaying(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => startPlaying(draft, requestId));
   },
   completePlaying(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => completePlaying(draft, requestId));
   },
   returnToQueue(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => returnToQueue(draft, requestId));
   },
   dequeueToAccepted(requestId: string): void {
+    assertManageRequest(requestId);
     commit((draft) => dequeueToAccepted(draft, requestId));
   },
   moveQueue(venueId: string, requestId: string, direction: -1 | 1): void {
+    assertManageVenue(venueId);
     commit((draft) => moveQueueItem(draft, venueId, requestId, direction));
   },
   reorderQueue(venueId: string, activeId: string, overId: string): void {
+    assertManageVenue(venueId);
     commit((draft) => reorderQueue(draft, venueId, activeId, overId));
   },
   updateVenue(venueId: string, input: VenueSettingsInput): void {
+    assertManageVenue(venueId);
     const parsed = venueSettingsSchema.safeParse(input);
     if (!parsed.success) throw new DomainError("settings_invalid");
     commit((draft) => applyVenueSettings(draft, venueId, parsed.data));
   },
   addTrack(venueId: string, input: TrackFormInput): string {
+    assertManageVenue(venueId);
     const parsed = trackFormSchema.safeParse(input);
     if (!parsed.success) throw new DomainError("track_invalid");
     let id = "";
@@ -249,14 +305,17 @@ export const repository = {
     return id;
   },
   setTrackPrice(trackId: string, priceKzt: number): void {
+    assertManageTrack(trackId);
     const parsed = trackPriceSchema.safeParse(priceKzt);
     if (!parsed.success) throw new DomainError("track_invalid");
     commit((draft) => setTrackPrice(draft, trackId, parsed.data));
   },
   setTrackEnabled(trackId: string, enabled: boolean): void {
+    assertManageTrack(trackId);
     commit((draft) => setTrackEnabled(draft, trackId, enabled));
   },
   removeTrack(trackId: string): void {
+    assertManageTrack(trackId);
     commit((draft) => removeTrack(draft, trackId));
   },
 };

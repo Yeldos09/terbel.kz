@@ -27,16 +27,22 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-subtle: var(--subtle);
+  --color-faint: var(--faint);
+  --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 6px);
 }
 
-:root {
+:root,
+[data-theme="dark"] {
   color-scheme: dark;
   --background: #09090b;
   --foreground: #f4f4f5;
+  --subtle: #d4d4d8;
+  --faint: #71717a;
   --card: #121216;
   --card-foreground: #f4f4f5;
   --popover: #16161b;
@@ -50,10 +56,60 @@
   --accent: #22222a;
   --accent-foreground: #f4f4f5;
   --destructive: #ef6b73;
+  --warning: #fde68a;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.12);
   --ring: #d6ff4a;
+  --glow-a: rgba(214, 255, 74, 0.16);
+  --glow-b: rgba(107, 140, 255, 0.16);
+  --glow-c: rgba(139, 124, 247, 0.14);
+  --tone-pending-bg: rgba(252, 211, 77, 0.15);
+  --tone-pending-fg: #fef3c7;
+  --tone-accepted-bg: rgba(125, 211, 252, 0.15);
+  --tone-accepted-fg: #e0f2fe;
+  --tone-queued-bg: rgba(196, 181, 253, 0.15);
+  --tone-queued-fg: #ede9fe;
+  --tone-rejected-fg: #fee2e2;
+  --chart-violet: #8b7cf7;
+  --chart-blue: #6b8cff;
   --radius: 0.9rem;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #2a56d4;
+  --subtle: #2a56d4;
+  --faint: #2a56d4;
+  --card: #ffffff;
+  --card-foreground: #2a56d4;
+  --popover: #ffffff;
+  --popover-foreground: #2a56d4;
+  --primary: #2a56d4;
+  --primary-foreground: #ffffff;
+  --secondary: #e8efff;
+  --secondary-foreground: #2a56d4;
+  --muted: #f3f6ff;
+  --muted-foreground: #234bb8;
+  --accent: #e5edff;
+  --accent-foreground: #1e46b3;
+  --destructive: #d92d3a;
+  --warning: #b45309;
+  --border: rgba(42, 86, 212, 0.18);
+  --input: rgba(42, 86, 212, 0.32);
+  --ring: #2a56d4;
+  --glow-a: rgba(42, 86, 212, 0.16);
+  --glow-b: rgba(42, 86, 212, 0.08);
+  --glow-c: rgba(42, 86, 212, 0.05);
+  --tone-pending-bg: rgba(180, 83, 9, 0.12);
+  --tone-pending-fg: #b45309;
+  --tone-accepted-bg: rgba(3, 105, 161, 0.12);
+  --tone-accepted-fg: #0369a1;
+  --tone-queued-bg: rgba(109, 40, 217, 0.12);
+  --tone-queued-fg: #6d28d9;
+  --tone-rejected-fg: #be123c;
+  --chart-violet: #6d28d9;
+  --chart-blue: #1d4ed8;
 }
 
 html,
@@ -78,8 +134,8 @@ body {
 }
 
 ::selection {
-  background: #d6ff4a;
-  color: #14160a;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 :focus-visible {
@@ -105,10 +161,10 @@ body {
 
 .landing-bg {
   background:
-    radial-gradient(900px 420px at 85% -10%, rgba(214, 255, 74, 0.16), transparent 55%),
-    radial-gradient(680px 380px at -10% 15%, rgba(107, 140, 255, 0.16), transparent 52%),
-    radial-gradient(520px 320px at 50% 110%, rgba(139, 124, 247, 0.14), transparent 50%),
-    #09090b;
+    radial-gradient(900px 420px at 85% -10%, var(--glow-a), transparent 55%),
+    radial-gradient(680px 380px at -10% 15%, var(--glow-b), transparent 52%),
+    radial-gradient(520px 320px at 50% 110%, var(--glow-c), transparent 50%),
+    var(--background);
 }
 
 @media (prefers-reduced-motion: reduce) {

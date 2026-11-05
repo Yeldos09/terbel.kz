@@ -9,7 +9,7 @@ export function BrandLink({ className }: { className?: string }) {
   return (
     <Link to="/" className={cn("inline-flex items-center gap-2 font-display text-lg", className)}>
       <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-        sh
+        te
       </span>
       {messages.brand}
     </Link>

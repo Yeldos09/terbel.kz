@@ -15,7 +15,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-xl bg-white/10", className)} aria-hidden="true" />;
+  return <div className={cn("animate-pulse rounded-xl bg-accent", className)} aria-hidden="true" />;
 }
 
 export function Separator() {

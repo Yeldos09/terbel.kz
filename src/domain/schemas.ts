@@ -13,7 +13,7 @@ export function djOrderSchema(minBidKzt: number) {
       .number({ error: "Укажите сумму в тенге" })
       .int("Только целые тенге")
       .min(minBidKzt, "Сумма ниже минимума заведения")
-      .max(500_000, "Слишком большая сумма для демо"),
+      .max(500_000, "Слишком большая сумма"),
   });
 }
 
@@ -42,7 +42,22 @@ export const trackFormSchema = z.object({
 
 export const trackPriceSchema = z.number().int().min(100).max(200_000);
 
+export const registerVenueSchema = z.object({
+  name: z.string().trim().min(2, "Название от 2 символов").max(60),
+  city: z.string().trim().min(2, "Укажите город").max(40),
+  kind: z.enum(VENUE_KINDS),
+  mode: z.enum(VENUE_MODES),
+  slug: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Латиница, цифры и дефис"),
+  ownerName: z.string().trim().min(2, "Имя владельца").max(60),
+  email: z.string().trim().min(5, "Нужна почта").max(80).includes("@", { error: "Нужна почта" }),
+  password: z.string().min(4, "Пароль от 4 символов").max(40),
+});
+
 export type GuestDetails = z.infer<typeof guestDetailsSchema>;
 export type DjOrderInput = z.infer<ReturnType<typeof djOrderSchema>>;
 export type VenueSettingsInput = z.infer<typeof venueSettingsSchema>;
 export type TrackFormInput = z.infer<typeof trackFormSchema>;
+export type RegisterVenueInput = z.infer<typeof registerVenueSchema>;

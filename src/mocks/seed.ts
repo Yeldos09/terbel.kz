@@ -1,7 +1,7 @@
 import { buildQueue } from "../domain/queue.ts";
-import { SCHEMA_VERSION, type DemoDatabase, type MusicRequest, type Track, type Venue } from "../domain/types.ts";
+import { SCHEMA_VERSION, type Account, type DemoDatabase, type MusicRequest, type Track, type Venue } from "../domain/types.ts";
 
-export const BROKEN_COVER_URL = "https://covers.invalid/shaiqa/missing-cover.jpg";
+export const BROKEN_COVER_URL = "https://covers.invalid/terbel/missing-cover.jpg";
 
 const CATALOG = [
   ["Blinding Lights", "The Weeknd", "Pop", 200, 28],
@@ -130,7 +130,7 @@ export function createSeed(now = Date.now()): DemoDatabase {
       slug: "loft-47",
       name: "Лофт 47",
       city: "Алматы",
-      address: "демо-адрес, ул. Примерная, 47",
+      address: "ул. Панфилова, 47",
       kind: "bar",
       mode: "DJ",
       minBidKzt: 1_000,
@@ -145,12 +145,12 @@ export function createSeed(now = Date.now()): DemoDatabase {
       slug: "nochnaya-kuhnya",
       name: "Ночная кухня",
       city: "Алматы",
-      address: "демо-адрес, пр. Образцовый, 8",
+      address: "пр. Достык, 8",
       kind: "restaurant",
       mode: "JUKEBOX",
       minBidKzt: 1_000,
       greeting: "Кухня допоздна. Цена на трек фиксированная, очередь собирается сама.",
-      description: "Ресторан в режиме «Прямой заказ»: гость выбирает трек и платит цену заведения, без своей ставки. Оплата в демо не настоящая.",
+      description: "Ресторан в режиме «Прямой заказ»: гость выбирает трек и платит цену заведения.",
       tableLabel: "Стол",
       acceptWindowMinutes: 60,
       isOpen: true,
@@ -160,7 +160,7 @@ export function createSeed(now = Date.now()): DemoDatabase {
       slug: "samal-lounge",
       name: "Samal Lounge",
       city: "Алматы",
-      address: "демо-адрес, мкр. Самал, 3",
+      address: "мкр. Самал-2, 111",
       kind: "lounge",
       mode: "DJ",
       minBidKzt: 2_000,
@@ -175,11 +175,11 @@ export function createSeed(now = Date.now()): DemoDatabase {
       slug: "karaoke-hall",
       name: "Karaoke Hall",
       city: "Астана",
-      address: "демо-адрес, ул. Репетиционная, 2",
+      address: "ул. Кунаева, 14",
       kind: "karaoke",
       mode: "JUKEBOX",
       minBidKzt: 800,
-      greeting: "Кабинки и общий зал. Выбрал трек — встал в очередь после демо-оплаты.",
+      greeting: "Кабинки и общий зал. Выбрал трек — встал в очередь после оплаты.",
       description: "Караоке-холл с фиксированными ценами.",
       tableLabel: "Кабинка",
       acceptWindowMinutes: 40,
@@ -190,7 +190,7 @@ export function createSeed(now = Date.now()): DemoDatabase {
       slug: "reka",
       name: "Река",
       city: "Алматы",
-      address: "демо-адрес, наб. Учебная, 1",
+      address: "наб. Есентая, 1",
       kind: "bar",
       mode: "DJ",
       minBidKzt: 500,
@@ -632,8 +632,20 @@ export function createSeed(now = Date.now()): DemoDatabase {
         createdAt: at(now, -15),
       },
     ],
+    accounts: seedAccounts(),
     activeDjVenueId: "ven_loft",
     activeDashboardVenueId: "ven_loft",
     locale: "ru",
   };
+}
+
+function seedAccounts(): Account[] {
+  return [
+    { id: "acc_platform", role: "platform", name: "Оператор terbel", email: "operator@terbel.kz", password: "demo-admin", venueId: null },
+    { id: "acc_loft", role: "venue", name: "Айгерим", email: "loft@terbel.kz", password: "demo-loft", venueId: "ven_loft" },
+    { id: "acc_kitchen", role: "venue", name: "Дамир", email: "kitchen@terbel.kz", password: "demo-kitchen", venueId: "ven_kitchen" },
+    { id: "acc_samal", role: "venue", name: "Самал", email: "samal@terbel.kz", password: "demo-samal", venueId: "ven_samal" },
+    { id: "acc_karaoke", role: "venue", name: "Ерлан", email: "karaoke@terbel.kz", password: "demo-karaoke", venueId: "ven_karaoke" },
+    { id: "acc_reka", role: "venue", name: "Мадина", email: "reka@terbel.kz", password: "demo-reka", venueId: "ven_reka" },
+  ];
 }

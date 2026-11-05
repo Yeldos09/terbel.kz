@@ -41,18 +41,18 @@ export function RequestStatusPage() {
             : "";
 
   return (
-    <div className="min-h-dvh bg-[#09090b]">
-      <header className="border-b border-white/10 px-4 py-3">
+    <div className="min-h-dvh bg-background">
+      <header className="border-b border-border px-4 py-3">
         <BrandLink />
       </header>
       <PageMain className="mx-auto max-w-lg px-4 py-6">
-        <p className="text-sm text-zinc-400">{venue?.name}</p>
+        <p className="text-sm text-muted-foreground">{venue?.name}</p>
         <h1 className="mt-1 font-display text-3xl">{messages.tracker.title}</h1>
-        <div className="mt-5 flex gap-3 rounded-2xl border border-white/10 bg-[#121216] p-4">
+        <div className="mt-5 flex gap-3 rounded-2xl border border-border bg-card p-4">
           <CoverArt title={request.trackTitle} artist={request.trackArtist} hue={request.coverHue} coverUrl={request.coverUrl} className="h-16 w-16 shrink-0" />
           <div className="min-w-0">
             <p className="truncate font-semibold">{request.trackTitle}</p>
-            <p className="truncate text-sm text-zinc-400">{request.trackArtist}</p>
+            <p className="truncate text-sm text-muted-foreground">{request.trackArtist}</p>
             <p className="mt-1 text-sm">{formatKzt(request.amountKzt)}</p>
           </div>
         </div>
@@ -64,17 +64,17 @@ export function RequestStatusPage() {
         {request.status === "QUEUED" && view.position ? (
           <p className="mt-4 text-lg font-semibold">{interpolate(messages.tracker.position, { position: view.position })}</p>
         ) : null}
-        {request.status === "PENDING" ? <p className="mt-4 text-sm text-zinc-300">{messages.tracker.waiting}</p> : null}
-        {request.status === "ACCEPTED" ? <p className="mt-4 text-sm text-zinc-300">{messages.tracker.accepted}</p> : null}
-        {request.status === "COMPLETED" ? <p className="mt-4 text-sm text-zinc-300">{messages.tracker.done}</p> : null}
-        {note ? <p className="mt-4 rounded-xl bg-white/5 p-3 text-sm leading-6 text-zinc-200">{note}</p> : null}
-        <p className="mt-4 text-xs text-zinc-500">{formatDateTime(request.updatedAt)} · {messages.timezone}</p>
+        {request.status === "PENDING" ? <p className="mt-4 text-sm text-subtle">{messages.tracker.waiting}</p> : null}
+        {request.status === "ACCEPTED" ? <p className="mt-4 text-sm text-subtle">{messages.tracker.accepted}</p> : null}
+        {request.status === "COMPLETED" ? <p className="mt-4 text-sm text-subtle">{messages.tracker.done}</p> : null}
+        {note ? <p className="mt-4 rounded-xl bg-muted p-3 text-sm leading-6 text-subtle">{note}</p> : null}
+        <p className="mt-4 text-xs text-faint">{formatDateTime(request.updatedAt)} · {messages.timezone}</p>
         {!terminal ? (
           <ol className="mt-6 grid gap-2" aria-label={messages.tracker.path}>
             {FLOW.map((status, index) => {
               const done = stepIndex >= index;
               return (
-                <li key={status} className={cn("rounded-lg px-3 py-2 text-sm", done ? "bg-primary/15 text-primary" : "bg-white/5 text-zinc-500")}>
+                <li key={status} className={cn("rounded-lg px-3 py-2 text-sm", done ? "bg-primary/15 text-primary" : "bg-muted text-faint")}>
                   {messages.status[status]}
                 </li>
               );

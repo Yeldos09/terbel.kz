@@ -11,6 +11,7 @@ import {
 } from "../src/domain/requests.ts";
 import { moveQueueItem, reorderQueue } from "../src/domain/queue.ts";
 import { REQUEST_STATUSES, type DemoDatabase } from "../src/domain/types.ts";
+import { canEnter, canManageVenue, safeNext } from "../src/features/auth/access.ts";
 import { createSeed } from "../src/mocks/seed.ts";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -24,6 +25,11 @@ function clone(db: DemoDatabase): DemoDatabase {
 const seed = createSeed(Date.parse("2026-11-02T12:00:00.000Z"));
 assert(seed.tracks.length >= 40, "нужны десятки треков");
 assert(seed.venues.length >= 5, "нужно несколько заведений");
+assert(seed.accounts.some((account) => account.role === "platform"), "нет оператора");
+assert(
+  seed.venues.every((venue) => seed.accounts.some((account) => account.venueId === venue.id)),
+  "у зала нет кабинета",
+);
 for (const status of REQUEST_STATUSES) {
   assert(seed.requests.some((request) => request.status === status), `нет статуса ${status}`);
 }
@@ -130,5 +136,15 @@ if (loftQueue.length >= 2) {
   const secondItem = loftQueue[1];
   if (first && secondItem) reorderQueue(reorderDb, loft.id, secondItem.requestId, first.requestId);
 }
+
+const guest = null;
+const venueSession = { accountId: "acc_loft", role: "venue" as const, venueId: "ven_loft", name: "Айгерим", email: "loft@terbel.kz" };
+const operator = { accountId: "acc_platform", role: "platform" as const, venueId: null, name: "Оператор", email: "operator@terbel.kz" };
+assert(!canEnter(guest, "dj") && !canEnter(guest, "venue") && !canEnter(guest, "platform"), "гость не входит в кабинет");
+assert(canEnter(venueSession, "dj") && canEnter(venueSession, "venue") && !canEnter(venueSession, "platform"), "зал не открывает платформу");
+assert(canEnter(operator, "platform") && canManageVenue(operator, "ven_kitchen"), "оператор ведёт залы");
+assert(canManageVenue(venueSession, "ven_loft") && !canManageVenue(venueSession, "ven_kitchen"), "зал видит только себя");
+assert(safeNext("/admin", venueSession) === "/venue", "чужой адрес не открывается");
+assert(safeNext("https://evil.example", operator) === "/admin", "внешняя ссылка не принимается");
 
 console.log("self-check ok", seed.tracks.length, "tracks", seed.requests.length, "requests");

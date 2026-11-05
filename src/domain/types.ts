@@ -30,7 +30,19 @@ export type DecisionCode = (typeof DECISION_CODES)[number];
 export const LOCALES = ["ru", "kk"] as const;
 export type Locale = (typeof LOCALES)[number];
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 3;
+
+export const ACCOUNT_ROLES = ["platform", "venue"] as const;
+export type AccountRole = (typeof ACCOUNT_ROLES)[number];
+
+export interface Account {
+  id: string;
+  role: AccountRole;
+  name: string;
+  email: string;
+  password: string;
+  venueId: string | null;
+}
 
 export interface Venue {
   id: string;
@@ -102,6 +114,7 @@ export interface CheckoutDraft {
 
 export interface DemoDatabase {
   schemaVersion: number;
+  accounts: Account[];
   venues: Venue[];
   tracks: Track[];
   requests: MusicRequest[];

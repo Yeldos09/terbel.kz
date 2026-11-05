@@ -1,15 +1,22 @@
 <!doctype html>
 <html lang="ru">
   <head>
+    <script>
+      try {
+        if (localStorage.getItem("terbel.theme") === "light") {
+          document.documentElement.dataset.theme = "light";
+        }
+      } catch (e) {}
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#09090b" />
     <meta
       name="description"
-      content="shaiqa.kz — заказы музыки по QR для баров, ресторанов, лаунжей и караоке. Демо без оплаты и стриминга."
+      content="terbel.kz — заказы музыки по QR для баров, ресторанов, лаунжей и караоке."
     />
-    <title>shaiqa.kz — музыка, которую заказывают гости</title>
+    <title>terbel.kz — музыка, которую заказывают гости</title>
   </head>
   <body>
     <div id="root"></div>

@@ -82,7 +82,7 @@ export function CheckoutPanel({
       </div>
       <p className="mt-5 text-sm text-muted-foreground">{messages.checkout.summary}</p>
       <p className="font-display text-4xl text-primary">{formatKzt(price)}</p>
-      {changed ? <p className="mt-2 text-sm text-amber-100">{interpolate(messages.checkout.priceChanged, { price: formatKzt(price) })}</p> : null}
+      {changed ? <p className="mt-2 text-sm text-warning">{interpolate(messages.checkout.priceChanged, { price: formatKzt(price) })}</p> : null}
       {blocked ? <p className="mt-3 text-sm text-muted-foreground">{messages.guest.closed}</p> : null}
       <Button
         className="mt-5 w-full"

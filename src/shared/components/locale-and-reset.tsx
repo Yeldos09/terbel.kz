@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTheme, type ThemeName } from "../../app/theme-context.ts";
 import type { Locale } from "../../domain/types.ts";
 import { repository } from "../../mocks/repository.ts";
 import { useI18n, useMessages } from "../i18n/context.ts";
 import { describeError } from "../lib/describe-error.ts";
+import { cn } from "../lib/utils.ts";
 import { Button } from "../ui/button.tsx";
 import { ConfirmDialog } from "./confirm-dialog.tsx";
 
@@ -29,6 +31,34 @@ export function LocaleSwitch() {
           }
         >
           {code === "ru" ? messages.langRu : messages.langKk}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function ThemeSwitch({ className }: { className?: string }) {
+  const { theme, setTheme } = useTheme();
+  const messages = useMessages();
+  const choose = (next: ThemeName) => {
+    if (next !== theme) setTheme(next);
+  };
+  return (
+    <div className={cn("flex items-center gap-2", className)} role="group" aria-label={messages.themeLabel}>
+      <span className="text-xs text-muted-foreground">{messages.themeLabel}</span>
+      {(["dark", "light"] as const).map((name) => (
+        <button
+          key={name}
+          type="button"
+          aria-pressed={theme === name}
+          onClick={() => choose(name)}
+          className={
+            theme === name
+              ? "cursor-pointer rounded-md bg-primary px-2 py-1 text-xs font-bold text-primary-foreground"
+              : "cursor-pointer rounded-md px-2 py-1 text-xs font-semibold text-muted-foreground hover:bg-accent"
+          }
+        >
+          {name === "dark" ? messages.themeDark : messages.themeLight}
         </button>
       ))}
     </div>

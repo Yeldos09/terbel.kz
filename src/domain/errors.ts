@@ -22,6 +22,10 @@ export const ERROR_CODES = [
   "track_invalid",
   "settings_invalid",
   "request_missing",
+  "auth_invalid",
+  "auth_email_taken",
+  "auth_slug_taken",
+  "auth_forbidden",
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
